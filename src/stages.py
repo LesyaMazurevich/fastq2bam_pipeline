@@ -12,7 +12,6 @@ from pipeline_base.runner import run_stage
 
 import os
 import sys
-import util
 
 class Stages(object):
     def __init__(self, state):
