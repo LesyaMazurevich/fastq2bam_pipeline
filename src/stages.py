@@ -9,8 +9,10 @@ as config, options, DRMAA and the logger.
 
 from pipeline_base.utils import safe_make_dir
 from pipeline_base.runner import run_stage
-import os
 
+import os
+import sys
+import util
 
 class Stages(object):
     def __init__(self, state):
@@ -26,32 +28,25 @@ class Stages(object):
         '''Original files'''
         pass
 
+    def fastq2bam(self, inputs, bam_out, sample):
+        '''
+          Convert fastq to bam. 
+          stages:
+          1 infer lanes and indexes
+          2 split into lanes
+          3 fastq2bam
+          4 merge
+          5 validate TODO
+        '''
 
-    def stage1(self, input, output):
-        '''stage 1'''
-        command = "./stage1.sh {input} {output}".format(input=input, output=output)
-        run_stage(self.state, 'stage1', command)
+        # input filenames
+        fastq_read1_in, fastq_read2_in = inputs
+        output_dir = os.path.dirname(bam_out)
+        log_out = os.path.join(output_dir, '{}.log.out'.format(bam_out))
+        log_err = os.path.join(output_dir, '{}.log.err'.format(bam_out))
 
+        command = "python /mnt/vicnode_nfs/code/fastq2bam.py --r1 {} --r2 {} --output_dir {} --bam {} 1>>{} 2>>{}".format(fastq_read1_in, fastq_read2_in, output_dir, bam_out, log_out, log_err)
+        run_stage(self.state, 'fastq2bam', command)
 
-    def stage2(self, input, output):
-        '''stage 2'''
-        command = "./stage2.sh {input} {output}".format(input=input, output=output)
-        run_stage(self.state, 'stage2', command)
-
-
-    def stage3(self, input, output):
-        '''stage 3'''
-        command = "./stage3.sh {input} {output}".format(input=input, output=output)
-        run_stage(self.state, 'stage3', command)
-
-
-    def stage4(self, input, output):
-        '''stage 4'''
-        command = "./stage4.sh {input} {output}".format(input=input, output=output)
-        run_stage(self.state, 'stage4', command)
-
-
-    def stage5(self, input, output):
-        '''stage 5'''
-        command = "./stage5.sh {input} {output}".format(input=input, output=output)
-        run_stage(self.state, 'stage5', command)
+    def align(self, inputs, bam_out):
+        pass

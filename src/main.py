@@ -4,7 +4,7 @@ from pipeline import make_pipeline
 import pipeline_base.main
 import pkg_resources 
 
-PROGRAM_NAME = "test_ruffus_pipeline" 
+PROGRAM_NAME = "fastq2bam_pipeline" 
 PROGRAM_INFO = pkg_resources.require(PROGRAM_NAME)[0]
 PROGRAM_VERSION = PROGRAM_INFO.version
 

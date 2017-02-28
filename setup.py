@@ -3,17 +3,17 @@
 from setuptools import setup
 
 setup(
-    name='test_ruffus_pipeline',
-    version='0.0.5',
-    author='Bernie Pope, Khalid Mahmood, Jessica Chung',
-    author_email='bjpope@unimelb.edu.au',
+    name='fastq2bam_pipeline',
+    version='0.0.6',
+    author='Peter Georgeson',
+    author_email='peter.georgeson@unimelb.edu.au',
     packages=['src'],
     entry_points={
-        'console_scripts': ['test_pipeline = src.main:main']
+        'console_scripts': ['fastq2bam_pipeline = src.main:main']
     },
-    url='https://github.com/bjpop/test_ruffus_pipeline',
+    url='https://github.com/supernifty/fastq2bam_pipeline',
     license='LICENSE',
-    description='test_ruffus_pipeline is a demonstration pipeline based on Ruffus', 
+    description='fastq2bam_pipeline is a demonstration pipeline based on Ruffus', 
     long_description=open('README.md').read(),
     install_requires=[
         "ruffus == 2.6.3",
