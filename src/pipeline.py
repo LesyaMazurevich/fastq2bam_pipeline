@@ -26,24 +26,24 @@ def make_pipeline(state):
         task_func=stages.fastq2bam,
         name='fastq2bam',
         input=output_from('original_files'),
-
-        # format 1 looks like sample_sampletype_R1
-        filter=formatter('(?P<path>.+)/(?P<sample>[a-zA-Z0-9_]+)_R1.fastq.gz'),
+        filter=formatter('(?P<path>.+)/(?P<sample>[a-zA-Z0-9]+)_R1.fastq.gz'),
         add_inputs=add_inputs('{path[0]}/{sample[0]}_R2.fastq.gz'),
         extras=['{sample[0]}'],
-        output='{path[0]}/{sample[0]}.bam')
+        output='{path[0]}/out/{sample[0]}.bam')
 
-        # format 2 looks like samplesampletype_flowcell_barcode_lane_R1
-        #filter=formatter('.+/(?P<sample>[a-zA-Z0-9]+)_(?P<flowcell>[a-zA-Z0-9]+)_(?P<barcode>[a-zA-Z0-9]+)_L(?P<lane>[0-9]+)_R1.fastq.gz'),
-        #add_inputs=add_inputs('{path[0]}/{sample[0]}_{flowcell[0]}_{barcode[0]}_L{lane[0]}_R2.fastq.gz'),
-        #extras=['{sample[0]}_{flowcell[0]}_{barcode[0]}_{lane[0]}'], # key for reading rg from config
+    pipeline.transform(
+        task_func=stages.validate_prealigned_bam,
+        name='validate_prealigned_bam',
+        input=output_from('fastq2bam'),
+        filter=formatter('(?P<path>.+)/(?P<sample>[a-zA-Z0-9]+).bam'),
+        output='{path[0]}/{sample[0]}.validation')
 
-        #output='{path[0]}/{sample[0]}_{flowcell[0]}_{barcode[0]}_L{lane[0]}.bam')
-
-    #pipeline.merge(
-    #    task_func=stages.merge_bam,
-    #    name='merge_bam',
-    #    input=output_from('fastq2bam'),
-    #    output='_merged')
+    pipeline.transform(
+        task_func=stages.align,
+        name='align',
+        input=output_from('validate_prealigned_bam'),
+        filter=formatter('(?P<path>.+)/(?P<sample>[a-zA-Z0-9]+).validation'),
+        add_inputs=add_inputs('{path[0]}/{sample[0]}.bam'),
+        output='{path[0]}/{sample[0]}.mapped.bam')
 
     return pipeline
