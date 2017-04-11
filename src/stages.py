@@ -13,6 +13,7 @@ from pipeline_base.runner import run_stage
 import os
 import re
 import sys
+import uuid
 
 class Stages(object):
     def __init__(self, state):
@@ -130,5 +131,7 @@ class Stages(object):
                 dockstore_fh.write(new_line)
 
         #command = '/mnt/vicnode_nfs/dockstore/dockstore tool launch --entry quay.io/wtsicgp/dockstore-cgpmap:1.0.6 --json {} 1>>{} 2>>{}'.format(dockstore_out, log_out, log_err)
-        command = 'TMPDIR=/mnt/vicnode_nfs/dockstore-tmp /mnt/vicnode_nfs/dockstore/dockstore tool launch --entry quay.io/wtsicgp/dockstore-cgpmap:2.0.0 --json {} 1>>{} 2>>{}'.format(dockstore_out, log_out, log_err)
+        tmp_dir = '/mnt/vicnode_nfs/dockstore-tmp/{}-{}'.format(sample, str(uuid.uuid4()))
+        command = 'mkdir -p "{}" && TMPDIR="{}" && PARAM_FILE=/mnt/vicnode_nfs/code/dockstore.params && /mnt/vicnode_nfs/dockstore/dockstore tool launch --entry quay.io/wtsicgp/dockstore-cgpmap:2.0.0 --json {} 1>>{} 2>>{} && rm -r "{}"'.format(tmp_dir, tmp_dir, dockstore_out, log_out, log_err, tmp_dir)
         run_stage(self.state, 'align', command)
+
